@@ -70,6 +70,11 @@ const writeApiPackageJson = ({repository, version, name}) => {
   fs.writeFileSync('package.json', JSON.stringify(pkgJson, null, 2), 'utf-8');
 }
 
+const writeNpmrc  = () => {
+  const content = `//npm.pkg.github.com/:_authToken=` + '${GITHUB_TOKEN}' + `
+@retrain-ai:registry=https://npm.pkg.github.com`;
+fs.writeFileSync('.npmrc', content, 'utf-8');
+}
 
 const main = async() => {
   debug('running server');
@@ -93,9 +98,10 @@ const main = async() => {
   shelljs.exec('npm i');
   
   writeApiPackageJson(packageInfo);
+  writeNpmrc();
 
   debug('publishing');
-  // shelljs.exec('npm publish');
+  shelljs.exec('npm publish');
   shelljs.exit()
 }
 main().catch(console.log);
