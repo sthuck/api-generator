@@ -101,6 +101,7 @@ const main = async() => {
   writeNpmrc();
 
   debug('publishing');
+  shelljs.touch('.npmignore');
   shelljs.exec('npm publish', {fatal: true});
   shelljs.exit()
 }
