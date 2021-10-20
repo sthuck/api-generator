@@ -71,7 +71,7 @@ const writeApiPackageJson = ({repository, version, name}) => {
 }
 
 const writeNpmrc  = () => {
-  const content = `//npm.pkg.github.com/:_authToken=` + '${GITHUB_TOKEN}' + `
+  const content = `//npm.pkg.github.com/:_authToken=` + '${GITHUB_PACKAGES_TOKEN}' + `
 @retrain-ai:registry=https://npm.pkg.github.com`;
 fs.writeFileSync('.npmrc', content, 'utf-8');
 }
@@ -101,7 +101,7 @@ const main = async() => {
   writeNpmrc();
 
   debug('publishing');
-  shelljs.exec('npm publish');
+  shelljs.exec('npm publish', {fatal: true});
   shelljs.exit()
 }
 main().catch(console.log);
