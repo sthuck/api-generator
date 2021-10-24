@@ -45,8 +45,15 @@ const downloadOpenApi = () => {
 // }
 
 const generateApiCode = () => {
-  shelljs.exec(`node ${__dirname}/node_modules/.bin/openapi-generator-cli generate -i openapi.json -g typescript -o ${outDir}`)
+  return new Promise((resolve, reject) => 
+  shelljs.exec(`node ${__dirname}/node_modules/.bin/openapi-generator-cli generate -i openapi.json -g typescript -o ${outDir}`, (code, stdout, stderr) => {
+    if (code !== 0) {
+      reject(new Error(stderr));
+    }
+    resolve();
+  }));
 }
+  
 
 const getBranchName = () => {
   return shelljs.exec(`git rev-parse --abbrev-ref HEAD`).stdout.replace('\n', '');
@@ -85,11 +92,15 @@ const main = async() => {
   downloadOpenApi();
   
   debug('killing server');
-  webServer.kill()
+  //TODO: kill server
+  shelljs.exec(`kill ${webServer.pid}`)
   debug('killed server')
 
   debug('generating api code');
-  generateApiCode();
+  await generateApiCode().catch(e => {
+    console.error(e);
+    shelljs.exit(-1);
+  })
   const packageInfo = getCurrentPackageInformation();
 
   shelljs.cd(outDir);
